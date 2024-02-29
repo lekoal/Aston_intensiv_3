@@ -5,4 +5,4 @@ data class ContactInfo(
     val name: String,
     val surname: String,
     val phone: String
-)
+) : ContactListItem
