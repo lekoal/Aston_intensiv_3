@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">AstonIntensiv3</string>
+    <string name="action_delete_title">Удаление</string>
+    <string name="btn_add_title">Добавить</string>
+    <string name="btn_delete_title">Удалить</string>
+    <string name="btn_cancel_title">Отмена</string>
 </resources>
