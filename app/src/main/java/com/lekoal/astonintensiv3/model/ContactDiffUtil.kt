@@ -12,4 +12,21 @@ class ContactDiffUtil : DiffUtil.ItemCallback<ContactListItem>() {
     override fun areContentsTheSame(oldItem: ContactListItem, newItem: ContactListItem): Boolean {
         return oldItem == newItem
     }
+
+    override fun getChangePayload(oldItem: ContactListItem, newItem: ContactListItem): Any? {
+        val diffBundle = Bundle()
+        if (oldItem.name != newItem.name) {
+            diffBundle.putString("name", newItem.name)
+        }
+        if (oldItem.surname != newItem.surname) {
+            diffBundle.putString("surname", newItem.surname)
+        }
+        if (oldItem.phone != newItem.phone) {
+            diffBundle.putString("phone", newItem.phone)
+        }
+        if (diffBundle.size() == 0) {
+            return null
+        }
+        return diffBundle
+    }
 }
