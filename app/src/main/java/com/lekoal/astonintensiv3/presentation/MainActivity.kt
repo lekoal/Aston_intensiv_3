@@ -1,35 +1,48 @@
 package com.lekoal.astonintensiv3.presentation
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.lekoal.astonintensiv3.R
 import com.lekoal.astonintensiv3.databinding.ActivityMainBinding
+import com.lekoal.astonintensiv3.model.ContactInfo
 import com.lekoal.astonintensiv3.model.ContactsAdapter
 import com.lekoal.astonintensiv3.model.ContactsInitial
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var contactsRV: RecyclerView
+    private lateinit var contactsAdapter: ContactsAdapter
+    private lateinit var contacts: List<ContactInfo>
+    private var isDeleteShows = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val toolbar = binding.mainToolBar
         setSupportActionBar(toolbar)
-
-        val contactsAdapter = ContactsAdapter {
-            Toast.makeText(this, "Click ${it.name}", Toast.LENGTH_SHORT).show()
-        }
+        contacts = ContactsInitial.get()
 
         contactsRV = binding.rvContacts
 
-        contactsRV.adapter = contactsAdapter
-        contactsAdapter.items = ContactsInitial.get()
+        contactsAdapter = ContactsAdapter(
+            onItemListener = {
 
+            },
+            onDeleteItem = { contacts ->
+                binding.btnDelete.setOnClickListener {
+                    contacts.forEach {
+                        Log.i("onDeleteItem", "${it.name} OnDelete")
+                    }
+                }
+            }
+        )
+        contactsRV.adapter = contactsAdapter
+        contactsAdapter.items = contacts
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -38,7 +51,53 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        Toast.makeText(this, "Menu selected!", Toast.LENGTH_SHORT).show()
+        val changedContacts = contacts.toMutableList().apply {
+            val res = get(2).copy(showCheckBox = true)
+            removeAt(2)
+            add(2, res)
+            val res2 = get(4).copy(showCheckBox = true)
+            removeAt(4)
+            add(4, res2)
+        }
+        contactsAdapter.items = changedContacts.toList()
+        isDeleteShows = !isDeleteShows
+        changeButtonVisibility()
         return true
+    }
+
+    private fun changeButtonVisibility() {
+        if (isDeleteShows) {
+            binding.btnAddContact.animate()
+                .alpha(0f)
+                .setDuration(300)
+                .withEndAction {
+                    binding.btnAddContact.visibility = View.GONE
+                    binding.btnCancel.visibility = View.VISIBLE
+                    binding.btnDelete.visibility = View.VISIBLE
+                }
+            binding.btnCancel.animate()
+                .alpha(1f)
+                .setDuration(300)
+            binding.btnDelete.animate()
+                .alpha(1f)
+                .setDuration(300)
+        } else {
+            binding.btnCancel.animate()
+                .alpha(0f)
+                .setDuration(300)
+                .withEndAction {
+                    binding.btnCancel.visibility = View.GONE
+                    binding.btnAddContact.visibility = View.VISIBLE
+                }
+            binding.btnDelete.animate()
+                .alpha(0f)
+                .setDuration(300)
+                .withEndAction {
+                    binding.btnDelete.visibility = View.GONE
+                }
+            binding.btnAddContact.animate()
+                .alpha(1f)
+                .setDuration(300)
+        }
     }
 }

@@ -70,6 +70,13 @@
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/rv_item_check_box"
+            android:layout_width="wrap_content"
+            android:visibility="gone"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical" />
+
     </com.google.android.material.card.MaterialCardView>
 
 
