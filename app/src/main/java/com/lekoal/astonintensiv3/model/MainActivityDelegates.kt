@@ -1,6 +1,7 @@
 package com.lekoal.astonintensiv3.model
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.widget.AppCompatTextView
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
@@ -19,7 +20,8 @@ object MainActivityDelegates {
             }
         ) {
             bind { diffPayloads ->
-                if (diffPayloads.isNotEmpty() && diffPayloads.first() is Bundle) {
+                if (diffPayloads.isNotEmpty()) {
+                    Log.i("diffPayloads", "GET PAYLOADS")
                     val newContent = diffPayloads.first() as Bundle
                     textViewAction(
                         binding.rvItemName,
@@ -33,14 +35,17 @@ object MainActivityDelegates {
                         binding.rvItemPhone,
                         newContent.getString(PAYLOADS_PHONE_KEY, item.name)
                     )
+                    if (newContent.getBoolean(PAYLOADS_CHECK_BOX_KEY))
+                        binding.rvItemCheckBox.visibility = View.VISIBLE else View.GONE
                 } else {
+                    Log.i("diffPayloads", "DON'T GET PAYLOADS")
                     binding.rvItemId.text = item.id.toString()
                     binding.rvItemName.text = item.name
                     binding.rvItemSurname.text = item.surname
                     binding.rvItemPhone.text = item.phone
+                    binding.rvItemCheckBox.visibility =
+                        if (item.showCheckBox) View.VISIBLE else View.GONE
                 }
-                binding.rvItemCheckBox.visibility =
-                    if (item.showCheckBox) View.VISIBLE else View.GONE
                 binding.root.setOnClickListener {
                     itemClickListener(item)
                 }

@@ -13,6 +13,11 @@ class MainViewModel : ViewModel() {
     val resultContacts: StateFlow<List<ContactInfo>> get() = _resultContacts
     private val currentContacts = ContactsInitial.get().toMutableList()
 
+    init {
+        viewModelScope.launch {
+            _resultContacts.emit(currentContacts)
+        }
+    }
     suspend fun deleteItems(items: List<ContactInfo>) {
         viewModelScope.launch {
             currentContacts.removeAll(items)
@@ -34,6 +39,15 @@ class MainViewModel : ViewModel() {
             currentContacts.removeAt(item.id - 1)
             currentContacts.add(item.id - 1, item)
             _resultContacts.emit(currentContacts)
+        }
+    }
+
+    fun checkBoxChangeVisibility() {
+        viewModelScope.launch {
+            currentContacts.replaceAll {
+                if (it.showCheckBox) it.copy(showCheckBox = false) else it.copy(showCheckBox = true)
+            }
+            _resultContacts.value = currentContacts
         }
     }
 }
