@@ -21,53 +21,21 @@ object MainActivityDelegates {
         ) {
 
             bind { diffPayloads ->
-
                 if (diffPayloads.isNotEmpty() && diffPayloads.first() is Bundle) {
                     val newContent = diffPayloads.first() as Bundle
-                    when {
-                        newContent.containsKey(PAYLOADS_NAME_KEY) -> {
-                            textViewAction(
-                                binding.rvItemName,
-                                newContent.getString(PAYLOADS_NAME_KEY, item.name)
-                            )
-                        }
-
-                        newContent.containsKey(PAYLOADS_SURNAME_KEY) -> {
-                            textViewAction(
-                                binding.rvItemSurname,
-                                newContent.getString(PAYLOADS_SURNAME_KEY, item.surname)
-                            )
-                        }
-
-                        newContent.containsKey(PAYLOADS_PHONE_KEY) -> {
-                            textViewAction(
-                                binding.rvItemPhone,
-                                newContent.getString(PAYLOADS_PHONE_KEY, item.name)
-                            )
-                        }
-
-                        newContent.containsKey(PAYLOADS_CHECK_BOX_KEY) -> {
-                            if (newContent.getBoolean(PAYLOADS_CHECK_BOX_KEY))
-                                binding.rvItemCheckBox.visibility = View.VISIBLE else View.GONE
-                        }
-
-                        newContent.containsKey(PAYLOADS_IS_CHECKED_KEY) -> {
-                            binding.rvItemCheckBox.isChecked =
-                                newContent.getBoolean(PAYLOADS_IS_CHECKED_KEY)
-                        }
-                    }
+                    payloadsBinding(newContent, binding, item)
                 } else {
-                    binding.rvItemId.text = item.id.toString()
-                    binding.rvItemName.text = item.name
-                    binding.rvItemSurname.text = item.surname
-                    binding.rvItemPhone.text = item.phone
-                    binding.rvItemCheckBox.visibility =
-                        if (item.showCheckBox) View.VISIBLE else View.GONE
-                    binding.rvItemCheckBox.isChecked = item.isChecked
+                    defaultBinding(binding, item)
                 }
 
-                binding.root.setOnClickListener {
-                    itemClickListener(item)
+                if (binding.rvItemCheckBox.visibility == View.GONE) {
+                    binding.root.isClickable = true
+                    binding.root.setOnClickListener {
+                        itemClickListener(item)
+                    }
+                }
+                if (binding.rvItemCheckBox.visibility == View.VISIBLE) {
+                    binding.root.isClickable = false
                 }
 
                 binding.rvItemCheckBox.setOnClickListener {
@@ -96,5 +64,59 @@ object MainActivityDelegates {
                     .alpha(1f)
                     .setDuration(300)
             }
+    }
+
+    private fun payloadsBinding(
+        newContent: Bundle,
+        binding: RvContactItemBinding,
+        item: ContactListItem
+    ) {
+        when {
+            newContent.containsKey(PAYLOADS_NAME_KEY) -> {
+                textViewAction(
+                    binding.rvItemName,
+                    newContent.getString(PAYLOADS_NAME_KEY, item.name)
+                )
+            }
+
+            newContent.containsKey(PAYLOADS_SURNAME_KEY) -> {
+                textViewAction(
+                    binding.rvItemSurname,
+                    newContent.getString(PAYLOADS_SURNAME_KEY, item.surname)
+                )
+            }
+
+            newContent.containsKey(PAYLOADS_PHONE_KEY) -> {
+                textViewAction(
+                    binding.rvItemPhone,
+                    newContent.getString(PAYLOADS_PHONE_KEY, item.name)
+                )
+            }
+
+            newContent.containsKey(PAYLOADS_CHECK_BOX_KEY) -> {
+                if (newContent.getBoolean(PAYLOADS_CHECK_BOX_KEY)) {
+                    binding.rvItemCheckBox.visibility = View.VISIBLE
+                    binding.root.isClickable = false
+                } else {
+                    binding.rvItemCheckBox.visibility = View.GONE
+                    binding.root.isClickable = true
+                }
+            }
+
+            newContent.containsKey(PAYLOADS_IS_CHECKED_KEY) -> {
+                binding.rvItemCheckBox.isChecked =
+                    newContent.getBoolean(PAYLOADS_IS_CHECKED_KEY)
+            }
+        }
+    }
+
+    private fun defaultBinding(binding: RvContactItemBinding, item: ContactListItem) {
+        binding.rvItemId.text = item.id.toString()
+        binding.rvItemName.text = item.name
+        binding.rvItemSurname.text = item.surname
+        binding.rvItemPhone.text = item.phone
+        binding.rvItemCheckBox.visibility =
+            if (item.showCheckBox) View.VISIBLE else View.GONE
+        binding.rvItemCheckBox.isChecked = item.isChecked
     }
 }

@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         contactsRV = binding.rvContacts
         contactsAdapter = ContactsAdapter(
             onItemListener = {
-
+                Log.i("onItemListener", "name: ${it.name}")
             },
             onDeleteItem = { contacts ->
                 binding.btnDelete.setOnClickListener {
@@ -62,7 +62,6 @@ class MainActivity : AppCompatActivity() {
             showAddButton()
         }
         viewModel.checkBoxChangeVisibility()
-
         return true
     }
 
