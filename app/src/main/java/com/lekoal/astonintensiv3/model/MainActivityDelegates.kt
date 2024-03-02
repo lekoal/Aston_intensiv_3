@@ -1,7 +1,6 @@
 package com.lekoal.astonintensiv3.model
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.widget.AppCompatTextView
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
@@ -20,25 +19,36 @@ object MainActivityDelegates {
             }
         ) {
             bind { diffPayloads ->
-                if (diffPayloads.isNotEmpty()) {
-                    Log.i("diffPayloads", "GET PAYLOADS")
+                if (diffPayloads.isNotEmpty() && diffPayloads.first() is Bundle) {
                     val newContent = diffPayloads.first() as Bundle
-                    textViewAction(
-                        binding.rvItemName,
-                        newContent.getString(PAYLOADS_NAME_KEY, item.name)
-                    )
-                    textViewAction(
-                        binding.rvItemSurname,
-                        newContent.getString(PAYLOADS_SURNAME_KEY, item.surname)
-                    )
-                    textViewAction(
-                        binding.rvItemPhone,
-                        newContent.getString(PAYLOADS_PHONE_KEY, item.name)
-                    )
-                    if (newContent.getBoolean(PAYLOADS_CHECK_BOX_KEY))
-                        binding.rvItemCheckBox.visibility = View.VISIBLE else View.GONE
+                    when {
+                        newContent.containsKey(PAYLOADS_NAME_KEY) -> {
+                            textViewAction(
+                                binding.rvItemName,
+                                newContent.getString(PAYLOADS_NAME_KEY, item.name)
+                            )
+                        }
+
+                        newContent.containsKey(PAYLOADS_SURNAME_KEY) -> {
+                            textViewAction(
+                                binding.rvItemSurname,
+                                newContent.getString(PAYLOADS_SURNAME_KEY, item.surname)
+                            )
+                        }
+
+                        newContent.containsKey(PAYLOADS_PHONE_KEY) -> {
+                            textViewAction(
+                                binding.rvItemPhone,
+                                newContent.getString(PAYLOADS_PHONE_KEY, item.name)
+                            )
+                        }
+
+                        newContent.containsKey(PAYLOADS_CHECK_BOX_KEY) -> {
+                            if (newContent.getBoolean(PAYLOADS_CHECK_BOX_KEY))
+                                binding.rvItemCheckBox.visibility = View.VISIBLE else View.GONE
+                        }
+                    }
                 } else {
-                    Log.i("diffPayloads", "DON'T GET PAYLOADS")
                     binding.rvItemId.text = item.id.toString()
                     binding.rvItemName.text = item.name
                     binding.rvItemSurname.text = item.surname

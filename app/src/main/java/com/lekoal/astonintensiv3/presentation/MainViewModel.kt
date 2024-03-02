@@ -9,45 +9,44 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
-    private val _resultContacts = MutableStateFlow<List<ContactInfo>>(listOf())
+    private var oldList = ContactsInitial.get().toMutableList()
+    private var newList = mutableListOf<ContactInfo>()
+    private val _resultContacts = MutableStateFlow<List<ContactInfo>>(oldList)
     val resultContacts: StateFlow<List<ContactInfo>> get() = _resultContacts
-    private val currentContacts = ContactsInitial.get().toMutableList()
 
     init {
-        viewModelScope.launch {
-            _resultContacts.emit(currentContacts)
-        }
+        newList = oldList
     }
+
     suspend fun deleteItems(items: List<ContactInfo>) {
         viewModelScope.launch {
-            currentContacts.removeAll(items)
+            oldList.removeAll(items)
             _resultContacts.emit(
-                currentContacts
+                oldList
             )
         }
     }
 
     suspend fun addItem(item: ContactInfo) {
         viewModelScope.launch {
-            currentContacts.add(item)
-            _resultContacts.emit(currentContacts)
+            oldList.add(item)
+            _resultContacts.emit(oldList)
         }
     }
 
     suspend fun editItem(item: ContactInfo) {
         viewModelScope.launch {
-            currentContacts.removeAt(item.id - 1)
-            currentContacts.add(item.id - 1, item)
-            _resultContacts.emit(currentContacts)
+            oldList.removeAt(item.id - 1)
+            oldList.add(item.id - 1, item)
+            _resultContacts.emit(oldList)
         }
     }
 
     fun checkBoxChangeVisibility() {
-        viewModelScope.launch {
-            currentContacts.replaceAll {
-                if (it.showCheckBox) it.copy(showCheckBox = false) else it.copy(showCheckBox = true)
-            }
-            _resultContacts.value = currentContacts
-        }
+        newList = oldList.map {
+            it.copy(showCheckBox = !it.showCheckBox)
+        }.toMutableList()
+        _resultContacts.value = newList.toList()
+        oldList = newList
     }
 }

@@ -1,19 +1,15 @@
 package com.lekoal.astonintensiv3.presentation
 
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.lekoal.astonintensiv3.R
 import com.lekoal.astonintensiv3.databinding.ActivityMainBinding
-import com.lekoal.astonintensiv3.model.ContactDiffUtil
-import com.lekoal.astonintensiv3.model.ContactInfo
 import com.lekoal.astonintensiv3.model.ContactsAdapter
 import kotlinx.coroutines.launch
 
@@ -21,7 +17,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var contactsRV: RecyclerView
     private lateinit var contactsAdapter: ContactsAdapter
-    private lateinit var contacts: List<ContactInfo>
     private var isDeleteShows = false
     private lateinit var viewModel: MainViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,11 +26,6 @@ class MainActivity : AppCompatActivity() {
         val toolbar = binding.mainToolBar
         setSupportActionBar(toolbar)
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
-        lifecycleScope.launch {
-            viewModel.resultContacts.collect {
-                contacts = it
-            }
-        }
         contactsRV = binding.rvContacts
         contactsAdapter = ContactsAdapter(
             onItemListener = {
@@ -48,7 +38,11 @@ class MainActivity : AppCompatActivity() {
             }
         )
         contactsRV.adapter = contactsAdapter
-        contactsAdapter.items = contacts
+        lifecycleScope.launch {
+            viewModel.resultContacts.collect {
+                contactsAdapter.items = it
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
