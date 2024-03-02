@@ -47,6 +47,11 @@ class MainActivity : AppCompatActivity() {
                 contactsAdapter.items = it
             }
         }
+        binding.btnCancel.setOnClickListener {
+            isDeleteShows = !isDeleteShows
+            viewModel.cancelDeleting()
+            showAddButton()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

@@ -38,6 +38,16 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    fun cancelDeleting() {
+        viewModelScope.launch {
+            newList = oldList.map {
+                it.copy(isChecked = false, showCheckBox = false)
+            }.toMutableList()
+            _resultContacts.value = newList
+            oldList = newList
+        }
+    }
+
     suspend fun editItem(item: ContactInfo) {
         viewModelScope.launch {
             oldList.removeAt(item.id - 1)
@@ -51,7 +61,7 @@ class MainViewModel : ViewModel() {
             newList = oldList.map {
                 it.copy(showCheckBox = !it.showCheckBox)
             }.toMutableList()
-            _resultContacts.value = newList.toList()
+            _resultContacts.value = newList
             oldList = newList
         }
     }
@@ -61,7 +71,7 @@ class MainViewModel : ViewModel() {
             newList = oldList.map {
                 if (it == item) item.copy(isChecked = !item.isChecked) else it
             }.toMutableList()
-            _resultContacts.value = newList.toList()
+            _resultContacts.value = newList
             oldList = newList
         }
     }
