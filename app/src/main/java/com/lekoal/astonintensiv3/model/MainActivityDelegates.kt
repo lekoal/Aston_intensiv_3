@@ -19,7 +19,6 @@ object MainActivityDelegates {
                 RvContactItemBinding.inflate(layoutInflater, parent, false)
             }
         ) {
-
             bind { diffPayloads ->
                 if (diffPayloads.isNotEmpty() && diffPayloads.first() is Bundle) {
                     val newContent = diffPayloads.first() as Bundle
@@ -40,7 +39,6 @@ object MainActivityDelegates {
 
                 binding.rvItemCheckBox.setOnClickListener {
                     onCheckItem(item)
-
                     if (binding.rvItemCheckBox.isChecked) {
                         if (!checkedItems.contains(item)) {
                             checkedItems.add(item)

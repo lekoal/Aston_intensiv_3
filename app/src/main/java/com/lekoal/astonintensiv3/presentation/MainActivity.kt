@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
             },
             onDeleteItem = { contacts ->
                 binding.btnDelete.setOnClickListener {
-                    Log.i("onDeleteItem", contacts.toString())
+                    viewModel.deleteItems(contacts)
                 }
             },
             onCheckItem = {

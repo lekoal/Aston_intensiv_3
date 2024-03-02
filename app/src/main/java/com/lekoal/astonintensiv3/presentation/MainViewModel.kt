@@ -18,12 +18,16 @@ class MainViewModel : ViewModel() {
         newList = oldList
     }
 
-    suspend fun deleteItems(items: List<ContactInfo>) {
+    fun deleteItems(items: List<ContactInfo>) {
         viewModelScope.launch {
-            oldList.removeAll(items)
-            _resultContacts.emit(
-                oldList
-            )
+            newList = oldList
+            items.forEach { item ->
+                newList.removeIf {
+                    item.id == it.id
+                }
+            }
+            _resultContacts.value = newList
+            oldList = newList
         }
     }
 
@@ -43,18 +47,22 @@ class MainViewModel : ViewModel() {
     }
 
     fun checkBoxChangeVisibility() {
-        newList = oldList.map {
-            it.copy(showCheckBox = !it.showCheckBox)
-        }.toMutableList()
-        _resultContacts.value = newList.toList()
-        oldList = newList
+        viewModelScope.launch {
+            newList = oldList.map {
+                it.copy(showCheckBox = !it.showCheckBox)
+            }.toMutableList()
+            _resultContacts.value = newList.toList()
+            oldList = newList
+        }
     }
 
     fun changeCheckItem(item: ContactInfo) {
-        newList = oldList.map {
-            if (it == item) item.copy(isChecked = !item.isChecked) else it
-        }.toMutableList()
-        _resultContacts.value = newList.toList()
-        oldList = newList
+        viewModelScope.launch {
+            newList = oldList.map {
+                if (it == item) item.copy(isChecked = !item.isChecked) else it
+            }.toMutableList()
+            _resultContacts.value = newList.toList()
+            oldList = newList
+        }
     }
 }
