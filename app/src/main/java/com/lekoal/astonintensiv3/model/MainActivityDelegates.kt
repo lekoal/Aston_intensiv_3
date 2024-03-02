@@ -11,14 +11,17 @@ object MainActivityDelegates {
     private val checkedItems = mutableListOf<ContactInfo>()
     fun contactsDelegate(
         itemClickListener: (ContactInfo) -> Unit,
-        onDeleteItem: (List<ContactInfo>) -> Unit
+        onDeleteItem: (List<ContactInfo>) -> Unit,
+        onCheckItem: (ContactInfo) -> Unit
     ) =
         adapterDelegateViewBinding<ContactInfo, ContactListItem, RvContactItemBinding>(
             { layoutInflater, parent ->
                 RvContactItemBinding.inflate(layoutInflater, parent, false)
             }
         ) {
+
             bind { diffPayloads ->
+
                 if (diffPayloads.isNotEmpty() && diffPayloads.first() is Bundle) {
                     val newContent = diffPayloads.first() as Bundle
                     when {
@@ -47,6 +50,11 @@ object MainActivityDelegates {
                             if (newContent.getBoolean(PAYLOADS_CHECK_BOX_KEY))
                                 binding.rvItemCheckBox.visibility = View.VISIBLE else View.GONE
                         }
+
+                        newContent.containsKey(PAYLOADS_IS_CHECKED_KEY) -> {
+                            binding.rvItemCheckBox.isChecked =
+                                newContent.getBoolean(PAYLOADS_IS_CHECKED_KEY)
+                        }
                     }
                 } else {
                     binding.rvItemId.text = item.id.toString()
@@ -55,19 +63,25 @@ object MainActivityDelegates {
                     binding.rvItemPhone.text = item.phone
                     binding.rvItemCheckBox.visibility =
                         if (item.showCheckBox) View.VISIBLE else View.GONE
+                    binding.rvItemCheckBox.isChecked = item.isChecked
                 }
+
                 binding.root.setOnClickListener {
                     itemClickListener(item)
                 }
-                binding.rvItemCheckBox.setOnCheckedChangeListener { _, isChecked ->
-                    if (isChecked) {
-                        checkedItems.add(item)
-                    } else {
-                        checkedItems.remove(item)
+
+                binding.rvItemCheckBox.setOnClickListener {
+                    onCheckItem(item)
+
+                    if (binding.rvItemCheckBox.isChecked) {
+                        if (!checkedItems.contains(item)) {
+                            checkedItems.add(item)
+                        }
                     }
-                }
-                checkedItems.apply {
-                    onDeleteItem(this)
+                    if (!binding.rvItemCheckBox.isChecked) {
+                        checkedItems.removeIf { it.id == item.id }
+                    }
+                    onDeleteItem(checkedItems)
                 }
             }
         }

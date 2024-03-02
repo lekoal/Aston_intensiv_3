@@ -49,4 +49,12 @@ class MainViewModel : ViewModel() {
         _resultContacts.value = newList.toList()
         oldList = newList
     }
+
+    fun changeCheckItem(item: ContactInfo) {
+        newList = oldList.map {
+            if (it == item) item.copy(isChecked = !item.isChecked) else it
+        }.toMutableList()
+        _resultContacts.value = newList.toList()
+        oldList = newList
+    }
 }

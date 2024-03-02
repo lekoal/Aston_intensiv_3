@@ -6,5 +6,6 @@ interface ContactListItem {
     val surname: String
     val phone: String
     val showCheckBox: Boolean
+    val isChecked: Boolean
     override fun equals(other: Any?): Boolean
 }

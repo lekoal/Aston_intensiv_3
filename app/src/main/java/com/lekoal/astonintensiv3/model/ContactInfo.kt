@@ -7,5 +7,6 @@ data class ContactInfo(
     override val name: String,
     override val surname: String,
     override val phone: String,
-    override val showCheckBox: Boolean = false
+    override val showCheckBox: Boolean = false,
+    override val isChecked: Boolean = false
 ) : ContactListItem

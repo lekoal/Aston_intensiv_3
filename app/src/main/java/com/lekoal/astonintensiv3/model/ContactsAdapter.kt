@@ -5,14 +5,16 @@ import com.lekoal.astonintensiv3.domain.ContactListItem
 
 class ContactsAdapter(
     onItemListener: (ContactInfo) -> Unit,
-    onDeleteItem: (List<ContactInfo>) -> Unit
+    onDeleteItem: (List<ContactInfo>) -> Unit,
+    onCheckItem: (ContactInfo) -> Unit
 ) :
     AsyncListDifferDelegationAdapter<ContactListItem>(ContactDiffUtil()) {
     init {
         delegatesManager.addDelegate(
             MainActivityDelegates.contactsDelegate(
                 onItemListener,
-                onDeleteItem
+                onDeleteItem,
+                onCheckItem
             )
         )
     }

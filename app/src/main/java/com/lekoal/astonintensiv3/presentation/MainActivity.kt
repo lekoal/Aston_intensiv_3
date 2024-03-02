@@ -1,6 +1,7 @@
 package com.lekoal.astonintensiv3.presentation
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -33,8 +34,11 @@ class MainActivity : AppCompatActivity() {
             },
             onDeleteItem = { contacts ->
                 binding.btnDelete.setOnClickListener {
-
+                    Log.i("onDeleteItem", contacts.toString())
                 }
+            },
+            onCheckItem = {
+                viewModel.changeCheckItem(it)
             }
         )
         contactsRV.adapter = contactsAdapter
