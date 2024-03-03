@@ -31,10 +31,15 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    suspend fun addItem(item: ContactInfo) {
+    fun addItem(item: ContactInfo) {
         viewModelScope.launch {
-            oldList.add(item)
-            _resultContacts.emit(oldList)
+            newList = oldList
+            val size = newList.size
+            if (!newList.contains(item)) {
+                newList.add(size, item)
+            }
+            _resultContacts.value = newList.toList()
+            oldList = newList
         }
     }
 

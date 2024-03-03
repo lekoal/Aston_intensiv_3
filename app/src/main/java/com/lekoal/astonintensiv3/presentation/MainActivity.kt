@@ -18,15 +18,19 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var contactsRV: RecyclerView
     private lateinit var contactsAdapter: ContactsAdapter
+    private var contactsListSize = 0
     private var isDeleteShows = false
-    private lateinit var viewModel: MainViewModel
+    private lateinit var mainViewModel: MainViewModel
+//    private lateinit var sharedViewModel: SharedViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val toolbar = binding.mainToolBar
         setSupportActionBar(toolbar)
-        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
+//        sharedViewModel = ViewModelProvider(this)[SharedViewModel::class.java]
         contactsRV = binding.rvContacts
         contactsAdapter = ContactsAdapter(
             onItemListener = {
@@ -34,24 +38,29 @@ class MainActivity : AppCompatActivity() {
             },
             onDeleteItem = { contacts ->
                 binding.btnDelete.setOnClickListener {
-                    viewModel.deleteItems(contacts)
+                    mainViewModel.deleteItems(contacts)
+
                 }
             },
             onCheckItem = {
-                viewModel.changeCheckItem(it)
+                mainViewModel.changeCheckItem(it)
             }
         )
         contactsRV.adapter = contactsAdapter
         lifecycleScope.launch {
-            viewModel.resultContacts.collect {
+            mainViewModel.resultContacts.collect {
                 contactsAdapter.items = it
+//                contactsListSize = it.size
             }
         }
-        binding.btnCancel.setOnClickListener {
-            isDeleteShows = !isDeleteShows
-            viewModel.cancelDeleting()
-            showAddButton()
-        }
+//        lifecycleScope.launch {
+//            sharedViewModel.contact.collect {
+//                if (it.name != "") {
+//                    mainViewModel.addItem(it)
+//                }
+//            }
+//        }
+        activateButtons()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -66,7 +75,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             showAddButton()
         }
-        viewModel.checkBoxChangeVisibility()
+        mainViewModel.checkBoxChangeVisibility()
         return true
     }
 
@@ -104,5 +113,22 @@ class MainActivity : AppCompatActivity() {
         binding.btnAddContact.animate()
             .alpha(1f)
             .setDuration(300)
+    }
+
+    private fun activateButtons() {
+        binding.btnCancel.setOnClickListener {
+            isDeleteShows = !isDeleteShows
+            mainViewModel.cancelDeleting()
+            showAddButton()
+        }
+//        binding.btnAddContact.setOnClickListener {
+//            val editorDialogFragment = DialogEditorFragment.newInstance(
+//                id = contactsListSize + 1,
+//                name = "",
+//                surname = "",
+//                phone = ""
+//            )
+//            editorDialogFragment.show(supportFragmentManager, "editorDialog")
+//        }
     }
 }
