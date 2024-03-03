@@ -10,7 +10,9 @@ class SimpleItemTouchHelperCallback(private val adapter: ItemTouchHelperAdapter)
         recyclerView: RecyclerView,
         viewHolder: RecyclerView.ViewHolder
     ): Int {
-        val dragFlags = ItemTouchHelper.UP or ItemTouchHelper.DOWN
+        val dragFlags = if (!adapter.getCurrentItems().any { it.showCheckBox })
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN
+        else 0
         return makeMovementFlags(dragFlags, 0)
     }
 

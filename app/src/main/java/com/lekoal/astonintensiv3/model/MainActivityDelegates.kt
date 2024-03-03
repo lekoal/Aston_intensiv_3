@@ -14,11 +14,9 @@ object MainActivityDelegates {
         onDeleteItem: (List<ContactInfo>) -> Unit,
         onCheckItem: (ContactInfo) -> Unit
     ) =
-        adapterDelegateViewBinding<ContactInfo, ContactListItem, RvContactItemBinding>(
-            { layoutInflater, parent ->
-                RvContactItemBinding.inflate(layoutInflater, parent, false)
-            }
-        ) {
+        adapterDelegateViewBinding<ContactInfo, ContactListItem, RvContactItemBinding>({ layoutInflater, parent ->
+            RvContactItemBinding.inflate(layoutInflater, parent, false)
+        }) {
             bind { diffPayloads ->
                 if (diffPayloads.isNotEmpty() && diffPayloads.first() is Bundle) {
                     val newContent = diffPayloads.first() as Bundle
@@ -26,7 +24,6 @@ object MainActivityDelegates {
                 } else {
                     defaultBinding(binding, item)
                 }
-
                 if (binding.rvItemCheckBox.visibility == View.GONE) {
                     binding.root.isClickable = true
                     binding.root.setOnClickListener {
@@ -36,61 +33,36 @@ object MainActivityDelegates {
                 if (binding.rvItemCheckBox.visibility == View.VISIBLE) {
                     binding.root.isClickable = false
                 }
-
-                binding.rvItemCheckBox.setOnClickListener {
-                    onCheckItem(item)
-                    if (binding.rvItemCheckBox.isChecked) {
-                        if (!checkedItems.contains(item)) {
-                            checkedItems.add(item)
-                        }
-                    }
-                    if (!binding.rvItemCheckBox.isChecked) {
-                        checkedItems.removeIf { it.id == item.id }
-                    }
-                    onDeleteItem(checkedItems)
-                }
+                listForDeleteFill(binding, onCheckItem, onDeleteItem, item)
             }
         }
 
     private fun textViewAction(view: AppCompatTextView, newText: String) {
-        view.animate()
-            .alpha(0f)
-            .setDuration(300)
-            .withEndAction {
+        view.animate().alpha(0f).setDuration(300).withEndAction {
                 view.text = newText
-                view.animate()
-                    .alpha(1f)
-                    .setDuration(300)
+                view.animate().alpha(1f).setDuration(300)
             }
     }
 
     private fun payloadsBinding(
-        newContent: Bundle,
-        binding: RvContactItemBinding,
-        item: ContactListItem
+        newContent: Bundle, binding: RvContactItemBinding, item: ContactListItem
     ) {
         when {
             newContent.containsKey(PAYLOADS_NAME_KEY) -> {
                 textViewAction(
-                    binding.rvItemName,
-                    newContent.getString(PAYLOADS_NAME_KEY, item.name)
+                    binding.rvItemName, newContent.getString(PAYLOADS_NAME_KEY, item.name)
                 )
             }
-
             newContent.containsKey(PAYLOADS_SURNAME_KEY) -> {
                 textViewAction(
-                    binding.rvItemSurname,
-                    newContent.getString(PAYLOADS_SURNAME_KEY, item.surname)
+                    binding.rvItemSurname, newContent.getString(PAYLOADS_SURNAME_KEY, item.surname)
                 )
             }
-
             newContent.containsKey(PAYLOADS_PHONE_KEY) -> {
                 textViewAction(
-                    binding.rvItemPhone,
-                    newContent.getString(PAYLOADS_PHONE_KEY, item.name)
+                    binding.rvItemPhone, newContent.getString(PAYLOADS_PHONE_KEY, item.name)
                 )
             }
-
             newContent.containsKey(PAYLOADS_CHECK_BOX_KEY) -> {
                 if (newContent.getBoolean(PAYLOADS_CHECK_BOX_KEY)) {
                     binding.rvItemCheckBox.visibility = View.VISIBLE
@@ -100,10 +72,8 @@ object MainActivityDelegates {
                     binding.root.isClickable = true
                 }
             }
-
             newContent.containsKey(PAYLOADS_IS_CHECKED_KEY) -> {
-                binding.rvItemCheckBox.isChecked =
-                    newContent.getBoolean(PAYLOADS_IS_CHECKED_KEY)
+                binding.rvItemCheckBox.isChecked = newContent.getBoolean(PAYLOADS_IS_CHECKED_KEY)
             }
         }
     }
@@ -113,8 +83,27 @@ object MainActivityDelegates {
         binding.rvItemName.text = item.name
         binding.rvItemSurname.text = item.surname
         binding.rvItemPhone.text = item.phone
-        binding.rvItemCheckBox.visibility =
-            if (item.showCheckBox) View.VISIBLE else View.GONE
+        binding.rvItemCheckBox.visibility = if (item.showCheckBox) View.VISIBLE else View.GONE
         binding.rvItemCheckBox.isChecked = item.isChecked
+    }
+
+    private fun listForDeleteFill(
+        binding: RvContactItemBinding,
+        onCheckItem: (ContactInfo) -> Unit,
+        onDeleteItem: (List<ContactInfo>) -> Unit,
+        item: ContactInfo
+    ) {
+        binding.rvItemCheckBox.setOnClickListener {
+            onCheckItem(item)
+            if (binding.rvItemCheckBox.isChecked) {
+                if (!checkedItems.contains(item)) {
+                    checkedItems.add(item)
+                }
+            }
+            if (!binding.rvItemCheckBox.isChecked) {
+                checkedItems.removeIf { it.id == item.id }
+            }
+            onDeleteItem(checkedItems)
+        }
     }
 }

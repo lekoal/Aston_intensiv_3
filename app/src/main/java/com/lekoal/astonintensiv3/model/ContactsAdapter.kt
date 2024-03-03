@@ -32,6 +32,8 @@ class ContactsAdapter(
         })
     }
 
+    override fun getCurrentItems(): MutableList<ContactListItem> = items
+
     private fun <T> MutableList<T>.swap(fromPosition: Int, toPosition: Int) {
         if (fromPosition == toPosition) return
         val item = this.removeAt(fromPosition)

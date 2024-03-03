@@ -178,7 +178,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun createItemTouchHelper() {
-       val itemTouchCallback = SimpleItemTouchHelperCallback(contactsAdapter)
+        val itemTouchCallback = SimpleItemTouchHelperCallback(contactsAdapter)
         val itemTouchHelper = ItemTouchHelper(itemTouchCallback)
         itemTouchHelper.attachToRecyclerView(binding.rvContacts)
     }
