@@ -1,7 +1,6 @@
 package com.lekoal.astonintensiv3.presentation
 
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -14,15 +13,15 @@ import com.lekoal.astonintensiv3.databinding.ActivityMainBinding
 import com.lekoal.astonintensiv3.model.ContactsAdapter
 import kotlinx.coroutines.launch
 
+private const val IS_DELETE_SHOWS = "IS_DELETE_SHOWS"
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var contactsRV: RecyclerView
     private lateinit var contactsAdapter: ContactsAdapter
-    private var contactsListSize = 0
+    private var contactsMaxId = 0
     private var isDeleteShows = false
     private lateinit var mainViewModel: MainViewModel
-//    private lateinit var sharedViewModel: SharedViewModel
-
+    private lateinit var sharedViewModel: SharedViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -30,36 +29,29 @@ class MainActivity : AppCompatActivity() {
         val toolbar = binding.mainToolBar
         setSupportActionBar(toolbar)
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
-//        sharedViewModel = ViewModelProvider(this)[SharedViewModel::class.java]
+        sharedViewModel = ViewModelProvider(this)[SharedViewModel::class.java]
         contactsRV = binding.rvContacts
-        contactsAdapter = ContactsAdapter(
-            onItemListener = {
-                Log.i("onItemListener", "name: ${it.name}")
-            },
-            onDeleteItem = { contacts ->
-                binding.btnDelete.setOnClickListener {
-                    mainViewModel.deleteItems(contacts)
-
-                }
-            },
-            onCheckItem = {
-                mainViewModel.changeCheckItem(it)
-            }
-        )
+        setAdapter()
         contactsRV.adapter = contactsAdapter
         lifecycleScope.launch {
             mainViewModel.resultContacts.collect {
                 contactsAdapter.items = it
-//                contactsListSize = it.size
+                contactsMaxId = it.last().id
             }
         }
-//        lifecycleScope.launch {
-//            sharedViewModel.contact.collect {
-//                if (it.name != "") {
-//                    mainViewModel.addItem(it)
-//                }
-//            }
-//        }
+        lifecycleScope.launch {
+            sharedViewModel.addContact.collect {
+                if (it.name != "") {
+                    mainViewModel.addItem(it)
+                }
+            }
+        }
+        lifecycleScope.launch {
+            sharedViewModel.editContact.collect {
+                mainViewModel.editItem(it)
+            }
+        }
+        setOnRestoreApplication(savedInstanceState)
         activateButtons()
     }
 
@@ -115,20 +107,56 @@ class MainActivity : AppCompatActivity() {
             .setDuration(300)
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean(IS_DELETE_SHOWS, isDeleteShows)
+        super.onSaveInstanceState(outState)
+    }
+
     private fun activateButtons() {
         binding.btnCancel.setOnClickListener {
             isDeleteShows = !isDeleteShows
             mainViewModel.cancelDeleting()
             showAddButton()
         }
-//        binding.btnAddContact.setOnClickListener {
-//            val editorDialogFragment = DialogEditorFragment.newInstance(
-//                id = contactsListSize + 1,
-//                name = "",
-//                surname = "",
-//                phone = ""
-//            )
-//            editorDialogFragment.show(supportFragmentManager, "editorDialog")
-//        }
+        binding.btnAddContact.setOnClickListener {
+            val editorDialogFragment = DialogEditorFragment.newInstance(
+                id = contactsMaxId + 1,
+                name = "",
+                surname = "",
+                phone = ""
+            )
+            editorDialogFragment.show(supportFragmentManager, "editorDialogAdd")
+        }
+    }
+
+    private fun setAdapter() {
+        contactsAdapter = ContactsAdapter(
+            onItemListener = {
+                val editorDialogFragment = DialogEditorFragment.newInstance(
+                    id = it.id,
+                    name = it.name,
+                    surname = it.surname,
+                    phone = it.phone
+                )
+                editorDialogFragment.show(supportFragmentManager, "editorDialogEdit")
+            },
+            onDeleteItem = { contacts ->
+                binding.btnDelete.setOnClickListener {
+                    mainViewModel.deleteItems(contacts)
+                }
+            },
+            onCheckItem = {
+                mainViewModel.changeCheckItem(it)
+            }
+        )
+    }
+
+    private fun setOnRestoreApplication(savedInstanceState: Bundle?) {
+        if (savedInstanceState != null) {
+            isDeleteShows = savedInstanceState.getBoolean(IS_DELETE_SHOWS, false)
+            if (isDeleteShows) {
+                hideAddButton()
+            }
+        }
     }
 }

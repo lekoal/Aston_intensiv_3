@@ -26,7 +26,7 @@ class MainViewModel : ViewModel() {
                     item.id == it.id
                 }
             }
-            _resultContacts.value = newList
+            _resultContacts.value = newList.toList()
             oldList = newList
         }
     }
@@ -48,16 +48,18 @@ class MainViewModel : ViewModel() {
             newList = oldList.map {
                 it.copy(isChecked = false, showCheckBox = false)
             }.toMutableList()
-            _resultContacts.value = newList
+            _resultContacts.value = newList.toList()
             oldList = newList
         }
     }
 
-    suspend fun editItem(item: ContactInfo) {
+    fun editItem(item: ContactInfo) {
         viewModelScope.launch {
-            oldList.removeAt(item.id - 1)
-            oldList.add(item.id - 1, item)
-            _resultContacts.emit(oldList)
+            newList = oldList.map {
+                if (it.id == item.id) item else it
+            }.toMutableList()
+            _resultContacts.value = newList.toList()
+            oldList = newList
         }
     }
 
@@ -66,7 +68,7 @@ class MainViewModel : ViewModel() {
             newList = oldList.map {
                 it.copy(showCheckBox = !it.showCheckBox)
             }.toMutableList()
-            _resultContacts.value = newList
+            _resultContacts.value = newList.toList()
             oldList = newList
         }
     }
@@ -74,9 +76,9 @@ class MainViewModel : ViewModel() {
     fun changeCheckItem(item: ContactInfo) {
         viewModelScope.launch {
             newList = oldList.map {
-                if (it == item) item.copy(isChecked = !item.isChecked) else it
+                if (it.id == item.id) item.copy(isChecked = !item.isChecked) else it
             }.toMutableList()
-            _resultContacts.value = newList
+            _resultContacts.value = newList.toList()
             oldList = newList
         }
     }

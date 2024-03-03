@@ -13,6 +13,7 @@ const val EDITOR_CONTACT_ID = "EDITOR_CONTACT_ID"
 const val EDITOR_CONTACT_NAME = "EDITOR_CONTACT_NAME"
 const val EDITOR_CONTACT_SURNAME = "EDITOR_CONTACT_SURNAME"
 const val EDITOR_CONTACT_PHONE = "EDITOR_CONTACT_PHONE"
+
 class DialogEditorFragment : DialogFragment() {
     private lateinit var sharedViewModel: SharedViewModel
     private var id = 0
@@ -42,7 +43,10 @@ class DialogEditorFragment : DialogFragment() {
             phone = args.getString(EDITOR_CONTACT_PHONE, "")
         }
 
-        binding.editorTitle.text = getString(R.string.editor_contact_title, id)
+        binding.editorTitle.text = if (isContactEdit) getString(
+            R.string.editor_edit_contact_title,
+            id
+        ) else getString(R.string.editor_add_contact_title, id)
         binding.editorNameEdit.setText(name)
         binding.editorSurnameEdit.setText(surname)
         binding.editorPhoneEdit.setText(phone)
@@ -56,15 +60,22 @@ class DialogEditorFragment : DialogFragment() {
             surname = binding.editorSurnameEdit.text.toString()
             phone = binding.editorPhoneEdit.text.toString()
 
-            sharedViewModel.sendContact(id, name, surname, phone)
+            if (isContactEdit) {
+                sharedViewModel.sendEditContact(id, name, surname, phone)
+            } else {
+                sharedViewModel.sendAddContact(id, name, surname, phone)
+            }
             dismiss()
         }
     }
 
     companion object {
+        var isContactEdit = false
+
         @JvmStatic
         fun newInstance(id: Int, name: String, surname: String, phone: String) =
             DialogEditorFragment().apply {
+                isContactEdit = name.isNotEmpty()
                 arguments = Bundle().apply {
                     putInt(EDITOR_CONTACT_ID, id)
                     putString(EDITOR_CONTACT_NAME, name)

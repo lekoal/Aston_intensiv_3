@@ -9,10 +9,11 @@
     <string name="edit_name_hint">Введите имя</string>
     <string name="edit_surname_hint">Введите фамилию</string>
     <string name="edit_phone_hint">Введите телефон</string>
-    <string name="editor_btn_cancel_title">Отмена</string>
-    <string name="editor_btn_confirm_title">Вперёд</string>
+    <string name="editor_button_cancel_title">Отмена</string>
+    <string name="editor_button_confirm_title">Вперёд</string>
     <string name="editor_name_title">Имя</string>
     <string name="editor_surname_title">Фамилия</string>
     <string name="editor_phone_title">Номер телефона</string>
-    <string name="editor_contact_title">Контакт %1$d</string>
+    <string name="editor_add_contact_title">Добавление контакта %1$d</string>
+    <string name="editor_edit_contact_title">Редактирование контакта %1$d</string>
 </resources>
