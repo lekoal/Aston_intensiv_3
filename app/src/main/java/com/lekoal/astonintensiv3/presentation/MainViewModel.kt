@@ -82,4 +82,12 @@ class MainViewModel : ViewModel() {
             oldList = newList
         }
     }
+
+    fun updateList(updatedList: List<ContactInfo>) {
+        viewModelScope.launch {
+            newList = updatedList.toMutableList()
+            _resultContacts.value = newList.toList()
+            oldList = newList
+        }
+    }
 }

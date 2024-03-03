@@ -7,13 +7,18 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.lekoal.astonintensiv3.R
 import com.lekoal.astonintensiv3.databinding.ActivityMainBinding
+import com.lekoal.astonintensiv3.domain.OnListChangedListener
+import com.lekoal.astonintensiv3.model.ContactInfo
 import com.lekoal.astonintensiv3.model.ContactsAdapter
+import com.lekoal.astonintensiv3.model.SimpleItemTouchHelperCallback
 import kotlinx.coroutines.launch
 
 private const val IS_DELETE_SHOWS = "IS_DELETE_SHOWS"
+
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var contactsRV: RecyclerView
@@ -33,9 +38,11 @@ class MainActivity : AppCompatActivity() {
         contactsRV = binding.rvContacts
         setAdapter()
         contactsRV.adapter = contactsAdapter
+        createItemTouchHelper()
         viewModelsOperations()
         setOnRestoreApplication(savedInstanceState)
         activateButtons()
+        setOnMoveChangeListListener()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -169,4 +176,19 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun createItemTouchHelper() {
+       val itemTouchCallback = SimpleItemTouchHelperCallback(contactsAdapter)
+        val itemTouchHelper = ItemTouchHelper(itemTouchCallback)
+        itemTouchHelper.attachToRecyclerView(binding.rvContacts)
+    }
+
+    private fun setOnMoveChangeListListener() {
+        contactsAdapter.setOnListChangedListener(object : OnListChangedListener {
+            override fun onListChanged(updatedList: List<ContactInfo>) {
+                mainViewModel.updateList(updatedList)
+            }
+        })
+    }
+
 }
