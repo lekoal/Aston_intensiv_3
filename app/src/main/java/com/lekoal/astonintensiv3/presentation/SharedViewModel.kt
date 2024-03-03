@@ -27,4 +27,9 @@ class SharedViewModel : ViewModel() {
     fun sendEditContact(id: Int, name: String, surname: String, phone: String) {
         _editContact.value = ContactInfo(id, name, surname, phone)
     }
+
+    fun clearAllLists() {
+        _addContact.value = initialContact
+        _editContact.value = initialContact
+    }
 }

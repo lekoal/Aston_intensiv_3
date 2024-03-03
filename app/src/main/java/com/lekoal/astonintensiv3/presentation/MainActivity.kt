@@ -33,24 +33,7 @@ class MainActivity : AppCompatActivity() {
         contactsRV = binding.rvContacts
         setAdapter()
         contactsRV.adapter = contactsAdapter
-        lifecycleScope.launch {
-            mainViewModel.resultContacts.collect {
-                contactsAdapter.items = it
-                contactsMaxId = it.last().id
-            }
-        }
-        lifecycleScope.launch {
-            sharedViewModel.addContact.collect {
-                if (it.name != "") {
-                    mainViewModel.addItem(it)
-                }
-            }
-        }
-        lifecycleScope.launch {
-            sharedViewModel.editContact.collect {
-                mainViewModel.editItem(it)
-            }
-        }
+        viewModelsOperations()
         setOnRestoreApplication(savedInstanceState)
         activateButtons()
     }
@@ -142,7 +125,9 @@ class MainActivity : AppCompatActivity() {
             },
             onDeleteItem = { contacts ->
                 binding.btnDelete.setOnClickListener {
-                    mainViewModel.deleteItems(contacts)
+                    lifecycleScope.launch {
+                        mainViewModel.deleteItems(contacts)
+                    }
                 }
             },
             onCheckItem = {
@@ -156,6 +141,31 @@ class MainActivity : AppCompatActivity() {
             isDeleteShows = savedInstanceState.getBoolean(IS_DELETE_SHOWS, false)
             if (isDeleteShows) {
                 hideAddButton()
+            }
+        }
+    }
+
+    private fun viewModelsOperations() {
+        lifecycleScope.launch {
+            mainViewModel.resultContacts.collect {
+                contactsAdapter.items = it
+                contactsMaxId = it.last().id
+            }
+        }
+        lifecycleScope.launch {
+            sharedViewModel.addContact.collect {
+                if (it.name != "") {
+                    mainViewModel.addItem(it)
+                    sharedViewModel.clearAllLists()
+                }
+            }
+        }
+        lifecycleScope.launch {
+            sharedViewModel.editContact.collect {
+                if (it.name != "") {
+                    mainViewModel.editItem(it)
+                    sharedViewModel.clearAllLists()
+                }
             }
         }
     }
