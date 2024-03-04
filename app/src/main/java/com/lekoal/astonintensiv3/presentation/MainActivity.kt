@@ -1,6 +1,7 @@
 package com.lekoal.astonintensiv3.presentation
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -18,6 +19,7 @@ import com.lekoal.astonintensiv3.model.SimpleItemTouchHelperCallback
 import kotlinx.coroutines.launch
 
 private const val IS_DELETE_SHOWS = "IS_DELETE_SHOWS"
+private const val CHECKED_CONTACTS_ID = "CHECKED_CONTACTS_ID"
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -27,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     private var isDeleteShows = false
     private lateinit var mainViewModel: MainViewModel
     private lateinit var sharedViewModel: SharedViewModel
+    private var checkedContactsId = intArrayOf()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -40,7 +43,6 @@ class MainActivity : AppCompatActivity() {
         contactsRV.adapter = contactsAdapter
         createItemTouchHelper()
         viewModelsOperations()
-        setOnRestoreApplication(savedInstanceState)
         activateButtons()
         setOnMoveChangeListListener()
     }
@@ -99,7 +101,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putBoolean(IS_DELETE_SHOWS, isDeleteShows)
+        outState.putIntArray(CHECKED_CONTACTS_ID, checkedContactsId)
         super.onSaveInstanceState(outState)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        setOnRestoreApplication(savedInstanceState)
+
     }
 
     private fun activateButtons() {
@@ -139,6 +148,12 @@ class MainActivity : AppCompatActivity() {
             },
             onCheckItem = {
                 mainViewModel.changeCheckItem(it)
+            },
+            onCheckedListChange = {
+                val idList = it.map { contact ->
+                    contact.id
+                }
+                checkedContactsId = idList.toIntArray()
             }
         )
     }
@@ -149,6 +164,7 @@ class MainActivity : AppCompatActivity() {
             if (isDeleteShows) {
                 hideAddButton()
             }
+            checkedContactsId = savedInstanceState.getIntArray(CHECKED_CONTACTS_ID) ?: intArrayOf()
         }
     }
 

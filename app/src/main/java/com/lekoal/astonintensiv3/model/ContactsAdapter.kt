@@ -8,7 +8,8 @@ import com.lekoal.astonintensiv3.domain.OnListChangedListener
 class ContactsAdapter(
     onItemListener: (ContactInfo) -> Unit,
     onDeleteItem: (List<ContactInfo>) -> Unit,
-    onCheckItem: (ContactInfo) -> Unit
+    onCheckItem: (ContactInfo) -> Unit,
+    onCheckedListChange: (List<ContactInfo>) -> Unit
 ) :
     AsyncListDifferDelegationAdapter<ContactListItem>(ContactDiffUtil()), ItemTouchHelperAdapter {
     private var listChangedListener: OnListChangedListener? = null
@@ -18,7 +19,8 @@ class ContactsAdapter(
             MainActivityDelegates.contactsDelegate(
                 onItemListener,
                 onDeleteItem,
-                onCheckItem
+                onCheckItem,
+                onCheckedListChange
             )
         )
     }

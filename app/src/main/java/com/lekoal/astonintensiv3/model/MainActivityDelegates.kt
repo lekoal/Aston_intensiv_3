@@ -1,6 +1,7 @@
 package com.lekoal.astonintensiv3.model
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.widget.AppCompatTextView
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
@@ -12,7 +13,8 @@ object MainActivityDelegates {
     fun contactsDelegate(
         itemClickListener: (ContactInfo) -> Unit,
         onDeleteItem: (List<ContactInfo>) -> Unit,
-        onCheckItem: (ContactInfo) -> Unit
+        onCheckItem: (ContactInfo) -> Unit,
+        onCheckedListChange: (List<ContactInfo>) -> Unit
     ) =
         adapterDelegateViewBinding<ContactInfo, ContactListItem, RvContactItemBinding>({ layoutInflater, parent ->
             RvContactItemBinding.inflate(layoutInflater, parent, false)
@@ -33,7 +35,7 @@ object MainActivityDelegates {
                 if (binding.rvItemCheckBox.visibility == View.VISIBLE) {
                     binding.root.isClickable = false
                 }
-                listForDeleteFill(binding, onCheckItem, onDeleteItem, item)
+                listForDeleteFill(binding, onCheckItem, onDeleteItem, item, onCheckedListChange)
             }
         }
 
@@ -91,17 +93,20 @@ object MainActivityDelegates {
         binding: RvContactItemBinding,
         onCheckItem: (ContactInfo) -> Unit,
         onDeleteItem: (List<ContactInfo>) -> Unit,
-        item: ContactInfo
+        item: ContactInfo,
+        onCheckedListChange: (List<ContactInfo>) -> Unit
     ) {
         binding.rvItemCheckBox.setOnClickListener {
             onCheckItem(item)
             if (binding.rvItemCheckBox.isChecked) {
                 if (!checkedItems.contains(item)) {
                     checkedItems.add(item)
+                    onCheckedListChange(checkedItems)
                 }
             }
             if (!binding.rvItemCheckBox.isChecked) {
                 checkedItems.removeIf { it.id == item.id }
+                onCheckedListChange(checkedItems)
             }
             onDeleteItem(checkedItems)
         }
