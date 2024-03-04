@@ -5,8 +5,10 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.lekoal.astonintensiv3.R
@@ -137,9 +139,7 @@ class MainActivity : AppCompatActivity() {
             },
             onDeleteItem = { contacts ->
                 binding.btnDelete.setOnClickListener {
-                    lifecycleScope.launch {
-                        mainViewModel.deleteItems(contacts)
-                    }
+                    mainViewModel.deleteItems(contacts)
                 }
             },
             onCheckItem = {
@@ -159,24 +159,30 @@ class MainActivity : AppCompatActivity() {
 
     private fun viewModelsOperations() {
         lifecycleScope.launch {
-            mainViewModel.resultContacts.collect {
-                contactsAdapter.items = it
-                contactsMaxId = it.last().id
-            }
-        }
-        lifecycleScope.launch {
-            sharedViewModel.addContact.collect {
-                if (it.name != "") {
-                    mainViewModel.addItem(it)
-                    sharedViewModel.clearAllLists()
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                mainViewModel.resultContacts.collect {
+                    contactsAdapter.items = it
+                    contactsMaxId = it.last().id
                 }
             }
         }
         lifecycleScope.launch {
-            sharedViewModel.editContact.collect {
-                if (it.name != "") {
-                    mainViewModel.editItem(it)
-                    sharedViewModel.clearAllLists()
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                sharedViewModel.addContact.collect {
+                    if (it.name != "") {
+                        mainViewModel.addItem(it)
+                        sharedViewModel.clearAllLists()
+                    }
+                }
+            }
+        }
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                sharedViewModel.editContact.collect {
+                    if (it.name != "") {
+                        mainViewModel.editItem(it)
+                        sharedViewModel.clearAllLists()
+                    }
                 }
             }
         }
@@ -195,5 +201,4 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
-
 }
