@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/transparent"
+    tools:context=".presentation.DialogEditorFragment">
+
+    <FrameLayout
+        android:id="@+id/editor_background_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.1"
+        android:background="@color/black" />
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        app:cardCornerRadius="15dp"
+        app:cardElevation="0dp"
+        app:contentPadding="15dp">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:minWidth="250dp"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/editor_title"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="10dp"
+                android:text="@string/hello_blank_fragment"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                tools:text="Some title" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/editor_name_title"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/editor_name_title"
+                android:textColor="@color/gray_800"
+                android:textSize="14sp"
+                tools:text="Some name title" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/editor_name_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/custom_edit_text_rounded"
+                android:drawablePadding="12dp"
+                android:hint="@string/edit_name_hint"
+                android:inputType="textPersonName"
+                android:padding="5dp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/editor_surname_title"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/editor_surname_title"
+                android:textColor="@color/gray_800"
+                android:textSize="14sp"
+                tools:text="Some surname title" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/editor_surname_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/custom_edit_text_rounded"
+                android:drawablePadding="12dp"
+                android:hint="@string/edit_surname_hint"
+                android:inputType="textPersonName"
+                android:padding="5dp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/editor_phone_title"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/editor_phone_title"
+                android:textColor="@color/gray_800"
+                android:textSize="14sp"
+                tools:text="Some phone title" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/editor_phone_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:background="@drawable/custom_edit_text_rounded"
+                android:drawablePadding="12dp"
+                android:hint="@string/edit_phone_hint"
+                android:inputType="phone"
+                android:padding="5dp" />
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/editor_btn_cancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:backgroundTint="?attr/colorPrimary"
+                    android:text="@string/editor_button_cancel_title"
+                    android:textColor="@color/white"
+                    android:textSize="14sp" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/editor_btn_confirm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:backgroundTint="?attr/colorPrimary"
+                    android:text="@string/editor_button_confirm_title"
+                    android:textColor="@color/white"
+                    android:textSize="14sp" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.cardview.widget.CardView>
+
+
+</FrameLayout>
